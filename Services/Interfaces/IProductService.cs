@@ -1,15 +1,14 @@
 ﻿using EcommerceClothes.Entities;
-using EcommerceClothes.Models;
 
 namespace EcommerceClothes.Services.Interfaces
 {
     public interface IProductService
     {
-        public IEnumerable<Product> GetAll();
-        public Product GetById(int id);
-        public Product GetByName(string name);
-        public void Add(ProductDTO productDTO);
-        public void Update(int id, ProductDTO productDTO);
-        public void Delete(int id);
+        List<Product> GetProducts();
+        Product? GetProductById(int id);
+        Product? GetProductByName(string name);
+        int CreateProduct(Product product);
+        void DeleteProduct(int id);
+        Product UpdateProduct(Product product);
     }
 }

@@ -1,8 +1,10 @@
 ﻿namespace EcommerceClothes.Models
 {
-    public class LineOfOrderDTO
+    public class LineOfOrderDto
     {
-        public int Quantity { get; set; }
+        public int Amount { get; set; }
+        public decimal UnitPrice { get; set; }
         public int ProductId { get; set; }
+        public int SaleOrderId { get; set; }
     }
 }

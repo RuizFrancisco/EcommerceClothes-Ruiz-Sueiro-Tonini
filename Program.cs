@@ -1,6 +1,3 @@
-using AutoMapper;
-using EcommerceClothes.Repositories.Implementations;
-using EcommerceClothes.Repositories.Interfaces;
 using EcommerceClothes.DBContext;
 using EcommerceClothes.Services.Implentations;
 using EcommerceClothes.Services.Interfaces;
@@ -12,31 +9,22 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+
+//builder.Services.AddControllers().AddNewtonsoftJson(options =>
+//    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+//);
+
 builder.Services.AddControllers();
-
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
 builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminPolicy", policy => policy.RequireClaim("usertype", "Admin"));
-    options.AddPolicy("ClientPolicy", policy => policy.RequireClaim("usertype", "Client"));
-    options.AddPolicy("BothPolicy", policy => policy.RequireClaim("usertype", "Admin", "Client"));
-});
-
 builder.Services.AddSwaggerGen(setupAction =>
 {
-    setupAction.AddSecurityDefinition("EcommerceClothesBearerAuth", new OpenApiSecurityScheme() 
+    setupAction.AddSecurityDefinition("ECommerceApiBearerAuth", new OpenApiSecurityScheme() //Esto va a permitir usar swagger con el token.
     {
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
-        Description = "Ingrese el token generado al iniciar sesion."
+        Description = "Acá pegar el token generado al loguearse."
     });
 
     setupAction.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -47,16 +35,28 @@ builder.Services.AddSwaggerGen(setupAction =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "EcommerceClothesBearerAuth" }
-            }, new List<string>() }
+                    Id = "ECommerceApiBearerAuth" }
+                }, new List<string>() }
     });
-});
+}); ;
+
+builder.Services.AddDbContext<DBContext>(dbContextOptions => dbContextOptions.UseSqlite(
+    builder.Configuration["DB:ConnectionString"]));
 
 
-builder.Services.AddDbContext<DBContext>(options => options.UseSqlite(builder.Configuration["ConnectionStrings:SQLiteConnection"]));
+#region Services
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ILineOfOrderService, LineOfOrderService>();
+#endregion
 
-builder.Services.AddAuthentication("Bearer") 
-    .AddJwtBearer(options => 
+//builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntenticación 
+    .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new()
         {
@@ -69,26 +69,6 @@ builder.Services.AddAuthentication("Bearer")
         };
     }
 );
-
-
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-#region Repositories
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<ILineOfOrderRepository, LineOfOrderRepository>();
-#endregion
-
-#region Services
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<ILineOfOrderService, LineOfOrderService>();
-#endregion
-
-builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

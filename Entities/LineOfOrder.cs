@@ -5,31 +5,16 @@ namespace EcommerceClothes.Entities
 {
     public class LineOfOrder
     {
-        public LineOfOrder()
-        {
-            CalculateTotalPrice();
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int Quantity { get; set; }
-        public float? TotalPrice { get; set; }
-
+        public int Amount { get; set; }
+        public decimal UnitPrice { get; set; }
         [ForeignKey("ProductId")]
+        public int ProductId { get; set; } // Clave foránea para la relación con Producto
         public Product Product { get; set; }
-        public int ProductId { get; set; }
-
-        [ForeignKey("SaleId")]
-        public Order Order { get; set; }
-        public int OrderId { get; set; }
-
-        public ICollection<Product> Products { get; set; } = new List<Product>(); 
-
-        public void CalculateTotalPrice()
-        {
-            TotalPrice = Quantity * (Product?.Price ?? 0);
-        }
-
+        [ForeignKey("SaleOrderId")]
+        public int SaleOrderId { get; set; } // Clave foránea para la relación con OrdenDeVenta
+        public Order SaleOrder { get; set; }
     }
 }

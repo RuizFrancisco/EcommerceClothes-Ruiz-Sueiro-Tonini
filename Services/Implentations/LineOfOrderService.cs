@@ -1,70 +1,69 @@
-﻿using AutoMapper;
-using EcommerceClothes.Entities;
-using EcommerceClothes.Models;
-using EcommerceClothes.Repositories.Interfaces;
+﻿using EcommerceClothes.Entities;
 using EcommerceClothes.Services.Interfaces;
-using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceClothes.Services.Implentations
 {
     public class LineOfOrderService : ILineOfOrderService
     {
-        private readonly DBContext.DBContext _dbContext;
-        private readonly IMapper _mapper;
-        private readonly IOrderRepository _orderRepository;
-        private readonly ILineOfOrderRepository _lineOfOrderRepository;
-
-        public LineOfOrderService(DBContext.DBContext dbContext, IMapper mapper, IOrderRepository orderRepository, ILineOfOrderRepository lineOfOrderRepository)
+        private readonly DBContext.DBContext _context;
+        public LineOfOrderService(DBContext.DBContext context)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
-            _orderRepository = orderRepository;
-            _lineOfOrderRepository = lineOfOrderRepository;
+            _context = context;
         }
 
-        public LineOfOrder GetLineOfOrder(int id)
+        public List<LineOfOrder> GetAllBySaleOrder(int orderId)
         {
-            var lineOfOrder = _lineOfOrderRepository.GetLineOfOrder(id);
+            return _context.LinesOfOrder
+                .Include(sol => sol.Product)
+                .Include(sol => sol.SaleOrder)
+                .ThenInclude(so => so.Client)
+                .Where(sol => sol.SaleOrderId == orderId)
+                .ToList();
+        }
 
-            if (lineOfOrder != null)
-            {
-                _dbContext.Entry(lineOfOrder)
-                    .Reference(lo => lo.Product)
-                    .Load();
-            }
+        public List<LineOfOrder> GetAllByProduct(int productId)
+        {
+            return _context.LinesOfOrder
+                .Include(sol => sol.Product)
+                .Where(sol => sol.ProductId == productId)
+                .Include(sol => sol.SaleOrder)
+                .ThenInclude(so => so.Client)
+                .ToList();
+        }
 
+        public LineOfOrder? GetOne(int Id)
+        {
+            return _context.LinesOfOrder
+                .Include(sol => sol.Product)
+                .Include(sol => sol.SaleOrder)
+                .ThenInclude(so => so.Client)
+                .SingleOrDefault(x => x.Id == Id);
+        }
+
+        public LineOfOrder CreateSaleOrderLine(LineOfOrder lineOfOrder)
+        {
+            _context.Add(lineOfOrder);
+            _context.SaveChanges();
             return lineOfOrder;
         }
-        public void UpdateLineOfOrder(int lineOfOrderId, LineOfOrderDTO lineOfOrderDTO)
+
+        public LineOfOrder UpdateSaleOrderLine(LineOfOrder lineOfOrder)
         {
-            var lineOfOrder = _lineOfOrderRepository.GetLineOfOrder(lineOfOrderId);
-
-            if (lineOfOrder != null)
-            {
-                _mapper.Map(lineOfOrderDTO, lineOfOrder);
-
-                _dbContext.SaveChanges();
-            }
+            _context.Update(lineOfOrder);
+            _context.SaveChanges();
+            return lineOfOrder;
         }
 
-        public void AddLineOfOrder(int orderId, LineOfOrderDTO lineOfOrderDTO)
+        public void DeleteSaleOrderLine(int id)
         {
-            var order = _orderRepository.GetOrderById(orderId);
+            var solToDelete = _context.LinesOfOrder.SingleOrDefault(p => p.Id == id);
 
-            if (order != null)
+            if (solToDelete != null)
             {
-                var lineOfOrder = _mapper.Map<LineOfOrder>(lineOfOrderDTO);
-                lineOfOrder.Order = order;
-
-                order.LinesOfOrder.Add(lineOfOrder);
-
-                _dbContext.SaveChanges();
+                _context.LinesOfOrder.Remove(solToDelete);
+                _context.SaveChanges();
             }
-        }
-
-        public void DeleteLineOfOrder(int id)
-        {
-            _lineOfOrderRepository.DeleteLineOfOrder(id);
         }
     }
 }

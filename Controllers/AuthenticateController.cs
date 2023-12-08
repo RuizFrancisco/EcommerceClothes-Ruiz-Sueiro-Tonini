@@ -1,7 +1,6 @@
 ﻿using EcommerceClothes.Entities;
 using EcommerceClothes.Models;
 using EcommerceClothes.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,40 +13,47 @@ namespace EcommerceClothes.Controllers
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly IAuthenticationService _authenticationService;
-        private readonly IUserService _userService;
+        public IUserService _userService;
+        public IConfiguration _configuration;
 
-        public AuthenticateController (IConfiguration configuration, IAuthenticationService authenticationService, IUserService userService)
+        public AuthenticateController(IUserService userService, IConfiguration configuration)
         {
-            _configuration = configuration;
-            _authenticationService = authenticationService;
             _userService = userService;
+            _configuration = configuration;
         }
 
         [HttpPost]
-        public IActionResult Authenticate([FromBody] AuthenticationRequestBody authenticationRequestBody)
+        public IActionResult Authenticate([FromBody] CredentialsDto credentialsDto)
         {
-            BaseResponse validateUserResult = _authenticationService.ValidateUser(authenticationRequestBody);
-            if (validateUserResult.Message == "wrong email")
+            //validar usuario
+            BaseResponse userValidationResult = _userService.UserValidation(credentialsDto.Email, credentialsDto.Password);
+            if (userValidationResult.Message == "email incorrecto")
             {
-                return BadRequest(validateUserResult.Message);
+                return BadRequest(userValidationResult.Message);
             }
-            else if (validateUserResult.Message == "wrong password")
+            else if (userValidationResult.Message == "contraseña incorrecta")
             {
-                return Unauthorized();
+                return Unauthorized(userValidationResult.Message);
             }
-            if (validateUserResult.Result)
+            else if (userValidationResult.Message == "Por favor, ingrese email y contraseña")
             {
-                User? user = _userService.GetByUserName(authenticationRequestBody.UserName);
+                return BadRequest(userValidationResult.Message);
+            }
+            if (userValidationResult.Result)
+            {
+
+                User user = _userService.GetUserByEmail(credentialsDto.Email);
+
                 var securityPassword = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
 
                 var signature = new SigningCredentials(securityPassword, SecurityAlgorithms.HmacSha256);
 
+
                 var claimsForToken = new List<Claim>();
                 claimsForToken.Add(new Claim("sub", user.Id.ToString()));
+                claimsForToken.Add(new Claim("email", user.Email));
                 claimsForToken.Add(new Claim("username", user.UserName));
-                claimsForToken.Add(new Claim("usertype", user.UserType.ToString()));
+                claimsForToken.Add(new Claim("role", user.UserType));
 
                 var jwtSecurityToken = new JwtSecurityToken(
                     _configuration["Authentication:Issuer"],

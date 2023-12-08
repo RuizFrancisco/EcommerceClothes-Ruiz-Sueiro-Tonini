@@ -1,68 +1,71 @@
-﻿using AutoMapper;
-using EcommerceClothes.Entities;
+﻿using EcommerceClothes.Entities;
 using EcommerceClothes.Models;
-using EcommerceClothes.Repositories.Interfaces;
 using EcommerceClothes.Services.Interfaces;
 
 namespace EcommerceClothes.Services.Implentations
 {
     public class UserService : IUserService
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly DBContext.DBContext _context;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(DBContext.DBContext context)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            _context = context;
         }
 
-        public IEnumerable<User> GetAll()
+        public User? GetUserByEmail(string email)
         {
-            return _userRepository.GetAll();
-        }
-        public User GetById(int id)
-        {
-            return _userRepository.GetById(id);
-        }
-        public User GetByUserName(string name)
-        {
-            return _userRepository.GetByUserName(name);
-        }
-        public void AddClient(UserDTO userDTO)
-        {
-            var user = _mapper.Map<Client>(userDTO);
-            _userRepository.AddClient(user);
+            return _context.Users.FirstOrDefault(u => u.Email == email);
         }
 
-        public void AddAdmin(UserDTO userDTO)
+        public BaseResponse UserValidation(string email, string password)
         {
-            var admin = _mapper.Map<Admin>(userDTO);
-            _userRepository.AddAdmin(admin);
-        }
+            BaseResponse response = new BaseResponse();
 
-        public void Update(int id, UserDTO userDTO)
-        {
-            var existingUser = _userRepository.GetById(id);
-
-            if (existingUser == null)
+            if (email == "string" || password == "string")
             {
-               
-                throw new Exception("Usuario no encontrado");
+                response.Result = false;
+                response.Message = "Por favor, ingrese email y contraseña";
+                return response;
             }
 
-            
-            existingUser.UserName = userDTO.UserName;
-            existingUser.Email = userDTO.Email;
-            existingUser.Password = userDTO.Password;
-
-            
-            _userRepository.Update(existingUser);
+            User? userForLogin = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (userForLogin != null)
+            {
+                if (userForLogin.Password == password)
+                {
+                    response.Result = true;
+                    response.Message = "registro exitoso";
+                }
+                else
+                {
+                    response.Result = false;
+                    response.Message = "contraseña incorrecta";
+                }
+            }
+            else
+            {
+                response.Result = false;
+                response.Message = "email incorrecto";
+            }
+            return response;
         }
 
-        public void Delete(int id)
+
+        public void DeleteUser(int Id)
         {
-            _userRepository.Delete(id);
+            User? userToDelete = _context.Users.FirstOrDefault(u => u.Id == Id);
+            userToDelete.State = false;
+            _context.Update(userToDelete);
+            _context.SaveChanges();
+
+        }
+
+        public int CreateUser(User user)
+        {
+            _context.Add(user);
+            _context.SaveChanges();
+            return user.Id;
         }
     }
 }

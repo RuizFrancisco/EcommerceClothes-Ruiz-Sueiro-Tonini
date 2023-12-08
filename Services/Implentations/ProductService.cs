@@ -1,61 +1,57 @@
-﻿using AutoMapper;
-using EcommerceClothes.Entities;
-using EcommerceClothes.Models;
-using EcommerceClothes.Repositories.Interfaces;
+﻿using EcommerceClothes.Entities;
 using EcommerceClothes.Services.Interfaces;
 
 namespace EcommerceClothes.Services.Implentations
 {
     public class ProductService : IProductService
     {
-        private readonly IMapper _mapper;
-        private readonly IProductRepository _productRepository;
+        private readonly DBContext.DBContext _context;
 
-        public ProductService(IMapper mapper, IProductRepository productRepository)
+        public ProductService(DBContext.DBContext context)
         {
-            _mapper = mapper;
-            _productRepository = productRepository;
+            _context = context;
         }
 
-        public IEnumerable<Product> GetAll()
+        public List<Product> GetProducts()
         {
-            return _productRepository.GetAll();
+            return _context.Products.ToList();
         }
 
-        public Product GetById(int id)
+        public Product? GetProductById(int id)
         {
-            return _productRepository.GetById(id);
+            return _context.Products.FirstOrDefault(p => p.Id == id);
         }
 
-        public Product GetByName(string name)
+        public Product? GetProductByName(string name)
         {
-            return _productRepository.GetByName(name);
+            return _context.Products.FirstOrDefault(p => p.Name == name);
         }
 
-        public void Add(ProductDTO productDTO)
+        public int CreateProduct(Product product)
         {
-            var product = _mapper.Map<Product>(productDTO);
-            _productRepository.Add(product);
+            _context.Products.Add(product);
+            _context.SaveChanges();
+
+            return (product.Id);
         }
 
-        public void Update(int id, ProductDTO productDTO)
+        public void DeleteProduct(int id)
         {
-            var existingProduct = _productRepository.GetById(id);
+            var productToDelete = _context.Products.SingleOrDefault(p => p.Id == id);
 
-            if (existingProduct == null)
+            if (productToDelete != null)
             {
-                throw new Exception("Producto no encontrado");
+                _context.Products.Remove(productToDelete);
+                _context.SaveChanges();
             }
-
-            existingProduct.Name = productDTO.Name;
-            existingProduct.Description = productDTO.Description;
-            existingProduct.Price = productDTO.Price;
-
-            _productRepository.Update(existingProduct);
         }
-        public void Delete(int id)
+
+        public Product UpdateProduct(Product product)
         {
-            _productRepository.Delete(id);
+            _context.Update(product);
+            _context.SaveChanges();
+            return product;
         }
+
     }
 }

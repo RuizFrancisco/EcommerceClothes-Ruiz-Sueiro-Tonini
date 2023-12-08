@@ -5,7 +5,6 @@ C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\EcommerceClothes
 C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\EcommerceClothes.runtimeconfig.json
 C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\EcommerceClothes.dll
 C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\EcommerceClothes.pdb
-C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\AutoMapper.dll
 C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\Humanizer.dll
 C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\Microsoft.Data.Sqlite.dll
@@ -87,4 +86,4 @@ C:\Users\Usuario\source\repos\EcommerceClothes\obj\Debug\net6.0\refint\Ecommerce
 C:\Users\Usuario\source\repos\EcommerceClothes\obj\Debug\net6.0\EcommerceClothes.pdb
 C:\Users\Usuario\source\repos\EcommerceClothes\obj\Debug\net6.0\EcommerceClothes.genruntimeconfig.cache
 C:\Users\Usuario\source\repos\EcommerceClothes\obj\Debug\net6.0\ref\EcommerceClothes.dll
-C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\Usuario\source\repos\EcommerceClothes\bin\Debug\net6.0\Newtonsoft.Json.dll

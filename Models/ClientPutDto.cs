@@ -1,9 +1,10 @@
 ﻿namespace EcommerceClothes.Models
 {
-    public class UserDTO
+    public class ClientPutDto
     {
-        public string UserName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public string UserName { get; set; }
+        public string Adress { get; set; }
     }
 }

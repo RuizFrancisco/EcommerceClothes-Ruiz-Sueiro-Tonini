@@ -1,6 +1,6 @@
 ﻿namespace EcommerceClothes.Models
 {
-    public class OrderDTO
+    public class OrderDto
     {
         public int ClientId { get; set; }
     }

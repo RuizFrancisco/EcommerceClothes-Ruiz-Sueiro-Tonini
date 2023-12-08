@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using EcommerceClothes.Entities;
-using EcommerceClothes.Models;
-using EcommerceClothes.Repositories.Interfaces;
+﻿using EcommerceClothes.Entities;
 using EcommerceClothes.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,90 +6,67 @@ namespace EcommerceClothes.Services.Implentations
 {
     public class OrderService : IOrderService
     {
-        private readonly IMapper _mapper;
-        private readonly IOrderRepository _orderRepository;
-        private readonly ILineOfOrderRepository _lineOfOrderRepository;
+        
+        private readonly DBContext.DBContext _context;
 
-        public OrderService(IMapper mapper, IOrderRepository orderRepository, ILineOfOrderRepository lineOfOrderRepository)
+        public OrderService(DBContext.DBContext context)
         {
-            _mapper = mapper;
-            _orderRepository = orderRepository;
-            _lineOfOrderRepository = lineOfOrderRepository;
+            _context = context;
         }
 
-        public IEnumerable<Order> GetAll()
+        public List<Order> GetAllByClient(int clientId) //todas por cliente
         {
-            var orders = _orderRepository.GetAll()
-                .Include(o => o.Client)
-                .Select(o => new Order
-                {
-                    Id = o.Id,
-
-                    Client = new Client
-                    {
-                        Id = o.Client.Id,
-                        UserName = o.Client.UserName,
-                    },
-
-                    LinesOfOrder = o.LinesOfOrder.Select(lo => new LineOfOrder
-                    {
-                        Id = lo.Id,
-                        Quantity = lo.Quantity,
-                        ProductId = lo.ProductId,
-
-                        Product = new Product
-                        {
-                            Id = lo.Product.Id,
-                            Name = lo.Product.Name,
-                            Price = lo.Product.Price,
-                            Description = lo.Product.Description
-                        },
-                        TotalPrice = (float)(lo.Quantity * lo.Product.Price)
-
-                    }).ToList(),
-                    TotalPrice = o.LinesOfOrder.Sum(lo => (float)(lo.Quantity * lo.Product.Price))
-                }).ToList();
-
-            return orders;
+            return _context.Orders
+                .Include(so => so.Client)
+                .Include(so => so.LinesOfOrder)
+                .ThenInclude(so => so.Product)
+                .Where(r => r.ClientId == clientId)
+                .ToList();
         }
-        public Order GetOrderById(int id)
+
+        public Order? GetOne(int Id)
         {
-            var order = _orderRepository.GetOrderById(id);
+            return _context.Orders
+                .Include(r => r.Client)
+                .Include(r => r.LinesOfOrder)
+                .ThenInclude(so => so.Product)
+                .SingleOrDefault(x => x.Id == Id);
+        }
 
-            if (order != null)
-            {
-                _orderRepository.IncludeOrderDetails(order);
-                order.TotalPrice = order.LinesOfOrder.Sum(o => (float)(o.Quantity * o.Product.Price));
-            }
+        public List<Order> GetAllByDate(DateTime date)
+        {
+            return _context.Orders
+                .Include(r => r.Client)
+                .Include(r => r.LinesOfOrder)
+                .ThenInclude(so => so.Product)
+                .Where(r => r.Date.Date == date.Date)
+                .ToList();
+        }
 
+        public Order CreateSaleOrder(Order order)
+        {
+            _context.Add(order);
+            _context.SaveChanges();
             return order;
         }
 
-        public IEnumerable<Order> GetOrdersByClientId(int clientId)
+        public Order UpdateSaleOrder(Order order)
         {
-            var orders = _orderRepository.GetOrdersByClientId(clientId)
-                .Include(o => o.Client)
-                .Include(o => o.LinesOfOrder)
-                    .ThenInclude(lo => lo.Product)
-                .ToList();
+            _context.Update(order);
+            _context.SaveChanges();
+            return order;
+        }
 
-            orders.ForEach(o =>
+        public void DeleteSaleOrder(int id)
+        {
+            var saleOrderToDelete = _context.Orders.SingleOrDefault(p => p.Id == id);
+
+            if (saleOrderToDelete != null)
             {
-                o.TotalPrice = o.LinesOfOrder.Sum(lo => (float)(lo.Quantity * lo.Product.Price));
-            });
+                _context.Orders.Remove(saleOrderToDelete);
+                _context.SaveChanges();
+            }
 
-            return orders;
-        }
-        public void AddOrder(OrderDTO orderDTO)
-        {
-            var order = _mapper.Map<Order>(orderDTO);
-            _orderRepository.AddOrder(order);
-        }
-
-
-        public void DeleteOrder(int id)
-        {
-            _orderRepository.DeleteOrder(id);
         }
     }
 }

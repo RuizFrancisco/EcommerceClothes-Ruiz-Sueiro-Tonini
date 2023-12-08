@@ -1,13 +1,14 @@
 ﻿using EcommerceClothes.Entities;
-using EcommerceClothes.Models;
 
 namespace EcommerceClothes.Services.Interfaces
 {
     public interface ILineOfOrderService
     {
-        public LineOfOrder GetLineOfOrder(int id);
-        public void AddLineOfOrder(int orderId, LineOfOrderDTO lineDTO);
-        public void UpdateLineOfOrder(int lineOfOrderId, LineOfOrderDTO lineDTO);
-        public void DeleteLineOfOrder(int id);
+        List<LineOfOrder> GetAllBySaleOrder(int orderId);
+        LineOfOrder? GetOne(int Id);
+        LineOfOrder CreateSaleOrderLine(LineOfOrder lineOfOrder);
+        LineOfOrder UpdateSaleOrderLine(LineOfOrder lineOfOrder);
+        void DeleteSaleOrderLine(int id);
+        List<LineOfOrder> GetAllByProduct(int productId);
     }
 }

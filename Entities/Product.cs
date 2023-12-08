@@ -8,14 +8,8 @@ namespace EcommerceClothes.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        [Required]
         public string Name { get; set; }
-
-        public string? Description { get; set; }
-
-        [Required]
-        public float Price { get; set; } = 0;
-        public ICollection<LineOfOrder> LinesOfOrder { get; set; } = new List<LineOfOrder>();
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
     }
 }

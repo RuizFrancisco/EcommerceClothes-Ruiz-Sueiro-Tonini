@@ -2,10 +2,7 @@
 {
     public class Client : User
     {
-        public Client() {
-            UserType = (EcommerceClothes.Enums.UserType.Client);
-        }
-
+        public string Address { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

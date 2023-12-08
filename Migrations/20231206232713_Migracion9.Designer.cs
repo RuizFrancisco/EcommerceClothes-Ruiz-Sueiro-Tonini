@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcommerceClothes.Migrations
 {
     [DbContext(typeof(DBContext.DBContext))]
-    [Migration("20231116001153_Update2.0")]
-    partial class Update20
+    [Migration("20231206232713_Migracion9")]
+    partial class Migracion9
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,28 +26,25 @@ namespace EcommerceClothes.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("SaleOrderId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("SaleId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<float?>("TotalPrice")
-                        .HasColumnType("REAL");
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
                     b.HasIndex("ProductId");
 
-                    b.ToTable("SaleLines", (string)null);
+                    b.HasIndex("SaleOrderId");
+
+                    b.ToTable("LinesOfOrder");
                 });
 
             modelBuilder.Entity("EcommerceClothes.Entities.Order", b =>
@@ -59,14 +56,14 @@ namespace EcommerceClothes.Migrations
                     b.Property<int>("ClientId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float?>("TotalPrice")
-                        .HasColumnType("REAL");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("EcommerceClothes.Entities.Product", b =>
@@ -75,39 +72,34 @@ namespace EcommerceClothes.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("LineOfOrderId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<float>("Price")
-                        .HasColumnType("REAL");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LineOfOrderId");
-
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Description = "Remera azul marino",
-                            Name = "Remera",
-                            Price = 8000f
+                            Id = 6,
+                            Name = "Remera Fiberton",
+                            Price = 1250m,
+                            Stock = 10
                         },
                         new
                         {
-                            Id = 2,
-                            Description = "Campera negra",
-                            Name = "Campera",
-                            Price = 18000f
+                            Id = 7,
+                            Name = "Remera Loren",
+                            Price = 1320m,
+                            Stock = 15
                         });
                 });
 
@@ -121,22 +113,34 @@ namespace EcommerceClothes.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("State")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserType")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
 
-                    b.HasDiscriminator<int>("UserType");
+                    b.HasDiscriminator<string>("UserType").HasValue("User");
 
                     b.UseTphMappingStrategy();
                 });
@@ -145,16 +149,34 @@ namespace EcommerceClothes.Migrations
                 {
                     b.HasBaseType("EcommerceClothes.Entities.User");
 
-                    b.HasDiscriminator().HasValue(0);
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue("Admin");
 
                     b.HasData(
                         new
                         {
                             Id = 4,
-                            Email = "francisco@gmail.com",
-                            Password = "1234",
-                            UserName = "AdminFran",
-                            UserType = 0
+                            Email = "lnovo@gmail.com",
+                            LastName = "Novo",
+                            Name = "Luisina",
+                            Password = "123456",
+                            State = true,
+                            UserName = "lnovo",
+                            Role = "admin"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Email = "bdiaz@gmail.com",
+                            LastName = "Bruno",
+                            Name = "Diaz",
+                            Password = "123456",
+                            State = true,
+                            UserName = "bdiaz",
+                            Role = "admin"
                         });
                 });
 
@@ -162,54 +184,65 @@ namespace EcommerceClothes.Migrations
                 {
                     b.HasBaseType("EcommerceClothes.Entities.User");
 
-                    b.ToTable("Users", (string)null);
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.HasDiscriminator().HasValue(1);
+                    b.HasDiscriminator().HasValue("Client");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Email = "pedro@gmail.com",
-                            Password = "1234",
-                            UserName = "PedroSanchez",
-                            UserType = 1
+                            Email = "ngomez@gmail.com",
+                            LastName = "Gomez",
+                            Name = "Nicolas",
+                            Password = "123456",
+                            State = true,
+                            UserName = "ngomez_cliente",
+                            Address = "Rivadavia 111"
                         },
                         new
                         {
                             Id = 2,
-                            Email = "mariano@gmail.com",
-                            Password = "1234",
-                            UserName = "MarianoRajoy",
-                            UserType = 1
+                            Email = "Jperez@gmail.com",
+                            LastName = "Perez",
+                            Name = "Juan",
+                            Password = "123456",
+                            State = true,
+                            UserName = "jperez",
+                            Address = "J.b.justo 111"
                         },
                         new
                         {
                             Id = 3,
-                            Email = "franco@gmail.com",
-                            Password = "1234",
-                            UserName = "Franco",
-                            UserType = 1
+                            Email = "jgarcia@gmail.com",
+                            LastName = "Garcia",
+                            Name = "Jose",
+                            Password = "123456",
+                            State = true,
+                            UserName = "jgarcia",
+                            Address = "San Martin 111"
                         });
                 });
 
             modelBuilder.Entity("EcommerceClothes.Entities.LineOfOrder", b =>
                 {
-                    b.HasOne("EcommerceClothes.Entities.Order", "Order")
-                        .WithMany("LinesOfOrder")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EcommerceClothes.Entities.Product", "Product")
-                        .WithMany("LinesOfOrder")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.HasOne("EcommerceClothes.Entities.Order", "SaleOrder")
+                        .WithMany("LinesOfOrder")
+                        .HasForeignKey("SaleOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("SaleOrder");
                 });
 
             modelBuilder.Entity("EcommerceClothes.Entities.Order", b =>
@@ -223,24 +256,7 @@ namespace EcommerceClothes.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("EcommerceClothes.Entities.Product", b =>
-                {
-                    b.HasOne("EcommerceClothes.Entities.LineOfOrder", null)
-                        .WithMany("Products")
-                        .HasForeignKey("LineOfOrderId");
-                });
-
-            modelBuilder.Entity("EcommerceClothes.Entities.LineOfOrder", b =>
-                {
-                    b.Navigation("Products");
-                });
-
             modelBuilder.Entity("EcommerceClothes.Entities.Order", b =>
-                {
-                    b.Navigation("LinesOfOrder");
-                });
-
-            modelBuilder.Entity("EcommerceClothes.Entities.Product", b =>
                 {
                     b.Navigation("LinesOfOrder");
                 });

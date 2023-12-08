@@ -1,114 +1,170 @@
-﻿using AutoMapper;
+﻿using EcommerceClothes.Entities;
 using EcommerceClothes.Models;
 using EcommerceClothes.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EcommerceClothes.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        public ProductController(IProductService productService, IMapper mapper)
+
+        public ProductController(IProductService productService)
         {
             _productService = productService;
         }
 
-        [HttpGet("GetAll")]
-        [Authorize("BothPolicy")]
-        public IActionResult GetAll()
+        [HttpGet("GetAllProducts")]
+        public IActionResult GetProducts()
         {
-            try
+            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value.ToString();
+            if (role == "Admin" || role == "Client")
             {
-                return Ok(_productService.GetAll());
+                var products = _productService.GetProducts();
+                try
+                {
+                    return Ok(products);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
-            catch
-            {
-                return BadRequest();
-            }
+            return Forbid();
         }
 
-        [HttpGet("GetById/{id}")]
-        [Authorize("AdminPolicy")]
-        public IActionResult GetById(int id)
+
+        [HttpGet("GetProductById{id}")]
+        public IActionResult GetProductById(int id)
         {
-            try
+            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value.ToString();
+            if (role == "Admin")
             {
-                var product = _productService.GetById(id);
+                var product = _productService.GetProductById(id);
 
                 if (product == null)
                 {
-                    return NotFound();
+                    return NotFound($"El producto con el ID: {id} no fue encontrado");
                 }
 
                 return Ok(product);
             }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            return Forbid();
         }
 
-        [HttpGet("GetByName/{name}")]
-        [Authorize("BothPolicy")]
-        public IActionResult GetByName(string name)
+        [HttpGet("GetProductByName{name}")]
+        public IActionResult GetProductByName(string name)
         {
-            try
+            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value.ToString();
+            if (role == "Admin" || role == "Client")
             {
-                return Ok(_productService.GetByName(name));
+                var product = _productService.GetProductByName(name);
+
+                if (product == null)
+                {
+                    return NotFound($"El producto no fue encontrado");
+                }
+
+                return Ok(product);
             }
-            catch
-            {
-                return NotFound();
-            }
+            return Forbid();
         }
 
-        [HttpPost("CreateProduct")]
-        [Authorize("AdminPolicy")]
-        public IActionResult CreateProduct([FromBody] ProductDTO productDTO)
+
+        [HttpPost("CreateNewProduct")]
+        public IActionResult CreateProduct([FromBody] ProductPostDto productDto)
         {
-            try
+            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value.ToString();
+            if (role == "Admin")
             {
-                _productService.Add(productDTO);
-                return StatusCode(201);
+                if (productDto.Name == null || productDto.Price <= 0)
+                {
+                    return BadRequest("Producto no creado, por favor completar los campos");
+                }
+                try
+                {
+                    var product = new Product()
+                    {
+                        Name = productDto.Name,
+                        Price = productDto.Price,
+                        Stock = productDto.Stock
+                    };
+
+                    int id = _productService.CreateProduct(product);
+
+                    return Ok($"Producto creado exitosamente con id: {id}");
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
-            catch
-            {
-                return BadRequest();
-            }
+            return Forbid();
         }
 
-        [HttpPut("UpdateProduct/{id}")]
-        [Authorize("AdminPolicy")]
-        public IActionResult Update(int id, [FromBody] ProductDTO productDTO)
+
+        [HttpDelete("DeleteProduct{id}")]
+        public IActionResult DeleteProduct([FromRoute] int id)
         {
-            try
+            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value.ToString();
+            if (role == "Admin")
             {
-                _productService.Update(id, productDTO);
-                return NoContent();
+                try
+                {
+                    var existingProduct = _productService.GetProductById(id);
+
+                    if (existingProduct == null)
+                    {
+                        return NotFound($"No se encontró ningún producto con el ID: {id}");
+                    }
+
+                    _productService.DeleteProduct(id);
+                    return Ok($"Producto con ID: {id} eliminado");
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Forbid();
         }
 
-        [HttpDelete("DeleteProduct/{id}")]
-        [Authorize("AdminPolicy")]
-        public IActionResult DeleteProduct(int id)
+
+        [HttpPut("UpdateProduct{id}")]
+        public IActionResult UpdateProduct([FromRoute] int id, [FromBody] ProductPutDto product)
         {
-            try
+            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value.ToString();
+            if (role == "Admin")
             {
-                _productService.Delete(id);
-                return NoContent();
+                var productToUpdate = _productService.GetProductById(id);
+                if (productToUpdate == null)
+                {
+                    return NotFound($"Producto con ID {id} no encontrado");
+                }
+                if (product.Price == 0 || product.Stock == 0)
+                {
+                    return BadRequest("Producto no actualizado, por favor completar los campos");
+                }
+
+                try
+                {
+                    productToUpdate.Price = product.Price;
+                    productToUpdate.Stock = product.Stock;
+
+                    productToUpdate = _productService.UpdateProduct(productToUpdate);
+                    return Ok($"Producto actualizado exitosamente");
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest($"Error al actualizar el producto: {ex.Message}");
+                }
             }
-            catch
-            {
-                return BadRequest();
-            }
+            return Forbid();
         }
     }
 }

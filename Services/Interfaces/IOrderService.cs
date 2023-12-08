@@ -1,14 +1,14 @@
 ﻿using EcommerceClothes.Entities;
-using EcommerceClothes.Models;
 
 namespace EcommerceClothes.Services.Interfaces
 {
     public interface IOrderService
     {
-        IEnumerable<Order> GetAll();
-        IEnumerable<Order> GetOrdersByClientId(int clientId);
-        Order GetOrderById(int id);
-        public void AddOrder(OrderDTO orderDTO);
-        void DeleteOrder(int id);
+        List<Order> GetAllByClient(int id);
+        List<Order> GetAllByDate(DateTime date);
+        Order? GetOne(int Id);
+        Order CreateSaleOrder(Order order);
+        Order UpdateSaleOrder(Order order);
+        void DeleteSaleOrder(int id);
     }
 }

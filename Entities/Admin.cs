@@ -2,8 +2,6 @@
 {
     public class Admin : User
     {
-        public Admin() {
-            UserType = (EcommerceClothes.Enums.UserType.Admin);
-        }
+        public string Role { get; set; } = "Admin";
     }
 }
