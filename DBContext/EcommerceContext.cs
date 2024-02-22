@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceClothes.DBContext
 {
-    public class DBContext : DbContext
+    public class EcommerceContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
@@ -14,7 +14,7 @@ namespace EcommerceClothes.DBContext
 
 
         //Acá estamos llamando al constructor de DbContext que es el que acepta las opciones
-        public DBContext(DbContextOptions<DBContext> options) : base(options)
+        public EcommerceContext(DbContextOptions<EcommerceContext> options) : base(options)
         {
         }
 

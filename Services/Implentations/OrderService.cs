@@ -1,4 +1,5 @@
-﻿using EcommerceClothes.Entities;
+﻿using EcommerceClothes.DBContext;
+using EcommerceClothes.Entities;
 using EcommerceClothes.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,9 +8,9 @@ namespace EcommerceClothes.Services.Implentations
     public class OrderService : IOrderService
     {
         
-        private readonly DBContext.DBContext _context;
+        private readonly EcommerceContext _context;
 
-        public OrderService(DBContext.DBContext context)
+        public OrderService(EcommerceContext context)
         {
             _context = context;
         }

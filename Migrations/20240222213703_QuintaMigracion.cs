@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EcommerceClothes.Migrations
 {
     /// <inheritdoc />
-    public partial class Migracion9 : Migration
+    public partial class QuintaMigracion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -102,8 +102,8 @@ namespace EcommerceClothes.Migrations
                 columns: new[] { "Id", "Name", "Price", "Stock" },
                 values: new object[,]
                 {
-                    { 6, "Remera Fiberton", 1250m, 10 },
-                    { 7, "Remera Loren", 1320m, 15 }
+                    { 6, "Remera azul marino", 8500m, 8 },
+                    { 7, "Buzo negro", 15000m, 5 }
                 });
 
             migrationBuilder.InsertData(
@@ -111,9 +111,9 @@ namespace EcommerceClothes.Migrations
                 columns: new[] { "Id", "Address", "Email", "LastName", "Name", "Password", "State", "UserName", "UserType" },
                 values: new object[,]
                 {
-                    { 1, "Rivadavia 111", "ngomez@gmail.com", "Gomez", "Nicolas", "123456", true, "ngomez_cliente", "Client" },
-                    { 2, "J.b.justo 111", "Jperez@gmail.com", "Perez", "Juan", "123456", true, "jperez", "Client" },
-                    { 3, "San Martin 111", "jgarcia@gmail.com", "Garcia", "Jose", "123456", true, "jgarcia", "Client" }
+                    { 1, "Mendoza 6000", "pperez@gmail.com", "Perez", "Pablo", "123456", true, "pperez", "Client" },
+                    { 2, "Corrientes 500", "jrodriguez@gmail.com", "Rodriguez", "Joaquin", "123456", true, "jrodriguez", "Client" },
+                    { 3, "Pellegini 4000", "tjavier@gmail.com", "Tonini", "Javier", "123456", true, "tjavier", "Client" }
                 });
 
             migrationBuilder.InsertData(
@@ -121,8 +121,8 @@ namespace EcommerceClothes.Migrations
                 columns: new[] { "Id", "Email", "LastName", "Name", "Password", "Role", "State", "UserName", "UserType" },
                 values: new object[,]
                 {
-                    { 4, "lnovo@gmail.com", "Novo", "Luisina", "123456", "admin", true, "lnovo", "Admin" },
-                    { 5, "bdiaz@gmail.com", "Bruno", "Diaz", "123456", "admin", true, "bdiaz", "Admin" }
+                    { 4, "fruiz@gmail.com", "Ruiz", "Francisco", "123456", "admin", true, "fruiz", "Admin" },
+                    { 5, "ssueiro@gmail.com", "Sueiro", "Sebastian", "123456", "admin", true, "ssueiro", "Admin" }
                 });
 
             migrationBuilder.CreateIndex(

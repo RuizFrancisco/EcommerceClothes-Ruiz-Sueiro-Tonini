@@ -3,19 +3,16 @@ using System;
 using EcommerceClothes.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace EcommerceClothes.Migrations
 {
-    [DbContext(typeof(DBContext.DBContext))]
-    [Migration("20231206232713_Migracion9")]
-    partial class Migracion9
+    [DbContext(typeof(EcommerceContext))]
+    partial class EcommerceContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
@@ -90,16 +87,16 @@ namespace EcommerceClothes.Migrations
                         new
                         {
                             Id = 6,
-                            Name = "Remera Fiberton",
-                            Price = 1250m,
-                            Stock = 10
+                            Name = "Remera azul marino",
+                            Price = 8500m,
+                            Stock = 8
                         },
                         new
                         {
                             Id = 7,
-                            Name = "Remera Loren",
-                            Price = 1320m,
-                            Stock = 15
+                            Name = "Buzo negro",
+                            Price = 15000m,
+                            Stock = 5
                         });
                 });
 
@@ -159,23 +156,23 @@ namespace EcommerceClothes.Migrations
                         new
                         {
                             Id = 4,
-                            Email = "lnovo@gmail.com",
-                            LastName = "Novo",
-                            Name = "Luisina",
+                            Email = "fruiz@gmail.com",
+                            LastName = "Ruiz",
+                            Name = "Francisco",
                             Password = "123456",
                             State = true,
-                            UserName = "lnovo",
+                            UserName = "fruiz",
                             Role = "admin"
                         },
                         new
                         {
                             Id = 5,
-                            Email = "bdiaz@gmail.com",
-                            LastName = "Bruno",
-                            Name = "Diaz",
+                            Email = "ssueiro@gmail.com",
+                            LastName = "Sueiro",
+                            Name = "Sebastian",
                             Password = "123456",
                             State = true,
-                            UserName = "bdiaz",
+                            UserName = "ssueiro",
                             Role = "admin"
                         });
                 });
@@ -194,35 +191,35 @@ namespace EcommerceClothes.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "ngomez@gmail.com",
-                            LastName = "Gomez",
-                            Name = "Nicolas",
+                            Email = "pperez@gmail.com",
+                            LastName = "Perez",
+                            Name = "Pablo",
                             Password = "123456",
                             State = true,
-                            UserName = "ngomez_cliente",
-                            Address = "Rivadavia 111"
+                            UserName = "pperez",
+                            Address = "Mendoza 6000"
                         },
                         new
                         {
                             Id = 2,
-                            Email = "Jperez@gmail.com",
-                            LastName = "Perez",
-                            Name = "Juan",
+                            Email = "jrodriguez@gmail.com",
+                            LastName = "Rodriguez",
+                            Name = "Joaquin",
                             Password = "123456",
                             State = true,
-                            UserName = "jperez",
-                            Address = "J.b.justo 111"
+                            UserName = "jrodriguez",
+                            Address = "Corrientes 500"
                         },
                         new
                         {
                             Id = 3,
-                            Email = "jgarcia@gmail.com",
-                            LastName = "Garcia",
-                            Name = "Jose",
+                            Email = "tjavier@gmail.com",
+                            LastName = "Tonini",
+                            Name = "Javier",
                             Password = "123456",
                             State = true,
-                            UserName = "jgarcia",
-                            Address = "San Martin 111"
+                            UserName = "tjavier",
+                            Address = "Pellegini 4000"
                         });
                 });
 

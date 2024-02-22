@@ -1,4 +1,5 @@
-﻿using EcommerceClothes.Entities;
+﻿using EcommerceClothes.DBContext;
+using EcommerceClothes.Entities;
 using EcommerceClothes.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,9 +7,9 @@ namespace EcommerceClothes.Services.Implentations
 {
     public class ClientService : IClientService
     {
-        private readonly DBContext.DBContext _context;
+        private readonly EcommerceContext _context;
 
-        public ClientService(DBContext.DBContext context)
+        public ClientService(EcommerceContext context)
         {
             _context = context;
         }

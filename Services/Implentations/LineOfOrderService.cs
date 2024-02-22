@@ -1,4 +1,5 @@
-﻿using EcommerceClothes.Entities;
+﻿using EcommerceClothes.DBContext;
+using EcommerceClothes.Entities;
 using EcommerceClothes.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,8 +7,8 @@ namespace EcommerceClothes.Services.Implentations
 {
     public class LineOfOrderService : ILineOfOrderService
     {
-        private readonly DBContext.DBContext _context;
-        public LineOfOrderService(DBContext.DBContext context)
+        private readonly EcommerceContext _context;
+        public LineOfOrderService(EcommerceContext context)
         {
             _context = context;
         }

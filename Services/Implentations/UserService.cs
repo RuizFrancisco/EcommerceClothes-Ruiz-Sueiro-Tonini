@@ -1,4 +1,5 @@
-﻿using EcommerceClothes.Entities;
+﻿using EcommerceClothes.DBContext;
+using EcommerceClothes.Entities;
 using EcommerceClothes.Models;
 using EcommerceClothes.Services.Interfaces;
 
@@ -6,9 +7,9 @@ namespace EcommerceClothes.Services.Implentations
 {
     public class UserService : IUserService
     {
-        private readonly DBContext.DBContext _context;
+        private readonly EcommerceContext _context;
 
-        public UserService(DBContext.DBContext context)
+        public UserService(EcommerceContext context)
         {
             _context = context;
         }

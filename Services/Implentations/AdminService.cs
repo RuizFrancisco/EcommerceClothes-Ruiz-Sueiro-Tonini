@@ -1,13 +1,14 @@
-﻿using EcommerceClothes.Entities;
+﻿using EcommerceClothes.DBContext;
+using EcommerceClothes.Entities;
 using EcommerceClothes.Services.Interfaces;
 
 namespace EcommerceClothes.Services.Implentations
 {
     public class AdminService : IAdminService
     {
-        private readonly DBContext.DBContext _context;
+        private readonly EcommerceContext _context;
 
-        public AdminService(DBContext.DBContext context)
+        public AdminService(EcommerceContext context)
         {
             _context = context;
         }

@@ -40,7 +40,7 @@ builder.Services.AddSwaggerGen(setupAction =>
     });
 }); ;
 
-builder.Services.AddDbContext<DBContext>(dbContextOptions => dbContextOptions.UseSqlite(
+builder.Services.AddDbContext<EcommerceContext>(dbContextOptions => dbContextOptions.UseSqlite(
     builder.Configuration["DB:ConnectionString"]));
 
 
